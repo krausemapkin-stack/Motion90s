@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Manage the Motion90s film catalog and rights-review status." />
+    <meta name="theme-color" content="#111310" />
+    <title>Catalog admin — Motion90s</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/styles.css" />
+    <link rel="stylesheet" href="/admin.css" />
+    <script type="module" src="/admin.js"></script>
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="wordmark" href="/" aria-label="Motion90s home">
+        <span class="wordmark-mark" aria-hidden="true">M</span>
+        <span>motion<span class="wordmark-light">90s</span></span>
+      </a>
+      <nav class="main-nav" aria-label="Admin navigation">
+        <a class="nav-link" href="/">View catalog</a>
+        <a class="nav-link active" href="/admin">Admin</a>
+      </nav>
+      <a class="watchlist-button" href="/">← Back to site</a>
+    </header>
+
+    <main class="admin-main">
+      <div class="admin-heading">
+        <div>
+          <div class="eyebrow section-eyebrow">Catalog workspace</div>
+          <h1>Film <em>management.</em></h1>
+          <p>Bring in video details, keep the catalog organized, and review rights before anything is published.</p>
+        </div>
+        <div class="admin-total"><strong id="movie-total">0</strong><span>MANAGED TITLES</span></div>
+      </div>
+
+      <aside class="admin-warning" role="note">
+        <span class="notice-symbol" aria-hidden="true">!</span>
+        <p><strong>Local demo workspace.</strong> Changes are stored in this browser only; this dashboard has no sign-in or shared server database. Imported channel videos are always unverified drafts. Having a public YouTube video does not grant streaming rights.</p>
+      </aside>
+
+      <section class="admin-import-grid" aria-label="Import movies">
+        <article class="admin-panel youtube-panel">
+          <div class="panel-topline"><span class="panel-number">01</span><span class="panel-label">OFFICIAL YOUTUBE API</span></div>
+          <h2>Import a channel</h2>
+          <p class="panel-intro">Fetch public uploads from a channel’s official uploads playlist, including every page returned by YouTube.</p>
+          <label class="admin-field">
+            <span>YouTube Data API v3 key <span class="required-mark">*</span></span>
+            <input id="api-key" type="password" autocomplete="off" placeholder="Enter a restricted API key for this import" />
+          </label>
+          <label class="admin-field">
+            <span>Channel URL, @handle, or channel ID <span class="required-mark">*</span></span>
+            <input id="channel-input" type="text" autocomplete="off" placeholder="youtube.com/@channel or UC…" />
+          </label>
+          <button id="channel-import" class="admin-button primary-admin-button" type="button">Import all public uploads <span aria-hidden="true">→</span></button>
+          <p class="field-hint">Use Google’s YouTube Data API v3. Restrict the key to this site and that API in Google Cloud; it is sent to Google from your browser and is never saved by this page. API quota and YouTube visibility/embed settings still apply.</p>
+        </article>
+
+        <article class="admin-panel bulk-panel">
+          <div class="panel-topline"><span class="panel-number">02</span><span class="panel-label">BULK FILE IMPORT</span></div>
+          <h2>Upload a catalog file</h2>
+          <p class="panel-intro">Add multiple records at once with CSV or JSON. All imported records start as drafts and need a rights review.</p>
+          <label class="file-drop" for="bulk-file">
+            <span class="file-icon" aria-hidden="true">↑</span>
+            <strong>Choose a CSV or JSON file</strong>
+            <span id="file-name">CSV headers: title, genre, categories, thumbnailUrl, description…</span>
+          </label>
+          <input id="bulk-file" class="sr-only" type="file" accept=".csv,.json,text/csv,application/json" />
+          <div class="bulk-actions">
+            <button id="bulk-import" class="admin-button secondary-admin-button" type="button" disabled>Import file</button>
+            <button id="export-catalog" class="text-button" type="button">Export JSON</button>
+          </div>
+          <p class="field-hint">JSON can be a movie array or an object with a <code>films</code> array. Add comma-separated categories and an HTTPS thumbnail URL. Imported rights claims are ignored.</p>
+        </article>
+      </section>
+
+      <p id="admin-status" class="admin-status" role="status" aria-live="polite"></p>
+
+      <section class="managed-section" aria-labelledby="managed-heading">
+        <div class="managed-heading">
+          <div>
+            <div class="eyebrow section-eyebrow">Your local records</div>
+            <h2 id="managed-heading">Managed movies</h2>
+          </div>
+          <label class="admin-search">
+            <span class="sr-only">Search managed movies</span>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.8" /><path d="m16 16 4.3 4.3" /></svg>
+            <input id="admin-search" type="search" placeholder="Find a movie..." />
+          </label>
+        </div>
+        <div class="managed-list" id="managed-list"></div>
+        <div id="no-movies" class="admin-empty" hidden>
+          <span aria-hidden="true">✳</span>
+          <strong>No managed movies yet</strong>
+          <p>Import a YouTube channel, upload a CSV or JSON file, or add records through bulk import.</p>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer admin-footer">
+      <a class="wordmark footer-mark" href="/" aria-label="Motion90s home">
+        <span class="wordmark-mark" aria-hidden="true">M</span>
+        <span>motion<span class="wordmark-light">90s</span></span>
+      </a>
+      <p>Stories, shared the right way.</p>
+      <span class="footer-copy">Local admin demo · Rights review required</span>
+    </footer>
+
+    <dialog id="edit-dialog" class="edit-dialog">
+      <form id="edit-form">
+        <div class="edit-header">
+          <div class="eyebrow section-eyebrow">Catalog record</div>
+          <button id="close-editor" class="dialog-close" type="button" aria-label="Close editor">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18" /></svg>
+          </button>
+          <h2 id="editor-title">Edit movie</h2>
+          <p>Rights verification is a separate review. Save as a draft until permissions and territories are confirmed.</p>
+        </div>
+        <input id="film-id" type="hidden" />
+        <label class="admin-field"><span>Title <span class="required-mark">*</span></span><input id="film-title" required maxlength="180" /></label>
+        <div class="form-pair">
+          <label class="admin-field"><span>Year</span><input id="film-year" type="number" min="1888" max="2100" /></label>
+          <label class="admin-field"><span>Genre</span>
+            <select id="film-genre"><option>Drama</option><option>Documentary</option><option>Short</option><option>Other</option></select>
+          </label>
+        </div>
+        <label class="admin-field"><span>Categories <span class="field-optional">(comma-separated)</span></span><input id="film-categories" maxlength="400" placeholder="Family, Classic, Ghanaian" /></label>
+        <label class="admin-field"><span>Movie thumbnail URL</span><input id="film-thumbnail" type="url" placeholder="https://i.ytimg.com/vi/VIDEO_ID/hqdefault.jpg" /></label>
+        <label class="admin-field"><span>Description</span><textarea id="film-description" rows="3" maxlength="5000"></textarea></label>
+        <label class="admin-field"><span>Official source URL</span><input id="film-source" type="url" placeholder="https://www.youtube.com/watch?v=…" /></label>
+        <label class="admin-field"><span>Official embed/player URL</span><input id="film-playback" type="url" placeholder="https://www.youtube-nocookie.com/embed/…" /></label>
+        <label class="embed-confirm"><input id="film-embeddable" type="checkbox" /><span>YouTube confirms embedding is enabled for this video</span></label>
+        <div class="form-pair">
+          <label class="admin-field"><span>Rights status</span><select id="film-rights"><option value="unverified">Unverified</option><option value="verified">Verified</option></select></label>
+          <label class="admin-field"><span>Catalog visibility</span><select id="film-visibility"><option value="draft">Draft</option><option value="published">Published</option></select></label>
+        </div>
+        <label class="admin-field"><span>Cleared territories <span class="field-optional">(comma-separated country codes)</span></span><input id="film-territories" placeholder="NG, GH" /></label>
+        <label class="admin-field"><span>License evidence / internal reference</span><textarea id="film-evidence" rows="2" placeholder="Record the license, permission, or public-domain research reference"></textarea></label>
+        <div id="editor-warning" class="editor-warning">Publishing requires independently verified rights, license evidence, a cleared territory, and an eligible official player.</div>
+        <div class="editor-actions">
+          <button id="cancel-editor" class="admin-button secondary-admin-button" type="button">Cancel</button>
+          <button class="admin-button primary-admin-button" type="submit">Save movie</button>
+        </div>
+      </form>
+    </dialog>
+  </body>
+</html>
