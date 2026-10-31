@@ -23,6 +23,7 @@ export async function importYouTubeChannel(apiKey, channel, { fetchImpl = global
       ...(pageToken ? { pageToken } : {}),
     }, apiKey, fetchImpl);
     uploads.push(...(page.items ?? []));
+    onProgress(`Loaded ${uploads.length} public uploads.`);
     pageToken = page.nextPageToken ?? "";
     if (pageToken && seenTokens.has(pageToken)) {
       throw new Error("YouTube returned a repeated page token; import stopped to avoid duplicating uploads.");
