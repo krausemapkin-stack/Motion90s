@@ -6,6 +6,7 @@
   "scripts": {
     "start": "node server.mjs",
     "test": "node --test",
-    "build:android-web": "node build-android-web.mjs"
+    "build:android-web": "node build-android-web.mjs",
+    "build:pages": "node build-pages.mjs"
   }
 }
