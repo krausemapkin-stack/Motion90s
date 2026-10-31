@@ -63,7 +63,7 @@ test("YouTube channel import follows every uploads page and preserves rights gat
     assert.deepEqual(film.territories, []);
     assert.equal(film.licenseEvidence, "");
   }
-  assert.ok(progress.some((message) => message.includes("2 found")));
+  assert.ok(progress.includes("Loaded 2 public uploads."));
 });
 
 test("YouTube API error detail is surfaced to the caller", async () => {
