@@ -20,6 +20,12 @@ Run the rights-gating tests with:
 npm test
 ```
 
+## Android APK
+
+The GitHub Actions workflow `.github/workflows/build-android-apk.yml` builds a **debug APK** when changes are pushed to `main`, for pull requests targeting `main`, or when manually started from the Actions tab. The build prepares the static web app, wraps it with Capacitor, and uploads `app-debug.apk` as the `motion90s-android-debug-apk` workflow artifact. Download the artifact from the completed workflow run and install the APK on an Android device for testing.
+
+The Android project is generated during CI and is not committed to this web-first repository. The debug APK is for testing; publishing through Google Play requires a release build signed with a protected release key.
+
 ## Rights-gated catalog
 
 The sample records in `catalog.js` are fictional demos, drafts with `rightsStatus: "unverified"`, and have no source URL, playback URL, territories, or license evidence. `getPublishedFilms()` only returns records that pass `isPublishable()` for a requested territory. The UI displays demo placeholders plus verified catalog entries for Nigeria (`NG`); change `viewerTerritory` in `app.js` for another territory. A record must have all of the following before it can appear in the published catalog or play:
