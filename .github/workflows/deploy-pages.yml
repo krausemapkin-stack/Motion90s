@@ -2,7 +2,7 @@ name: Deploy Motion90s to GitHub Pages
 
 on:
   push:
-    branches: [main, krausemapkin-stack-motion90s-mvp]
+    branches: [main]
     paths:
       - ".github/workflows/deploy-pages.yml"
       - "admin.css"
