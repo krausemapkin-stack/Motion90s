@@ -1,0 +1,8 @@
+{
+  "appId": "com.motion90s.app",
+  "appName": "Motion90s",
+  "webDir": "www",
+  "server": {
+    "androidScheme": "https"
+  }
+}

@@ -1,0 +1,95 @@
+name: Build Android APK
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/build-android-apk.yml"
+      - "admin.css"
+      - "admin.html"
+      - "admin.js"
+      - "admin-utils.js"
+      - "admin-utils.test.js"
+      - "app.js"
+      - "build-android-web.mjs"
+      - "capacitor.config.json"
+      - "catalog.js"
+      - "catalog.test.js"
+      - "index.html"
+      - "package.json"
+      - "styles.css"
+      - "youtube-import.js"
+      - "youtube-import.test.js"
+      - "server.mjs"
+      - "README.md"
+  pull_request:
+    branches: [main]
+    paths:
+      - ".github/workflows/build-android-apk.yml"
+      - "admin.css"
+      - "admin.html"
+      - "admin.js"
+      - "admin-utils.js"
+      - "admin-utils.test.js"
+      - "app.js"
+      - "build-android-web.mjs"
+      - "capacitor.config.json"
+      - "catalog.js"
+      - "catalog.test.js"
+      - "index.html"
+      - "package.json"
+      - "styles.css"
+      - "youtube-import.js"
+      - "youtube-import.test.js"
+      - "server.mjs"
+      - "README.md"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-apk:
+    name: Build debug APK
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - name: Run catalog and import tests
+        run: npm test
+
+      - name: Install Capacitor Android tooling
+        run: npm install --no-save --no-package-lock @capacitor/core@7 @capacitor/cli@7 @capacitor/android@7
+
+      - name: Prepare web assets
+        run: npm run build:android-web
+
+      - name: Generate Android project
+        run: npx cap add android
+
+      - name: Sync app assets
+        run: npx cap sync android
+
+      - name: Build debug APK
+        working-directory: android
+        run: ./gradlew --no-daemon assembleDebug
+
+      - name: Upload debug APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: motion90s-android-debug-apk
+          path: android/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
+          retention-days: 14

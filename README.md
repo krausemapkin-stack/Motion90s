@@ -14,11 +14,23 @@ Open [http://localhost:4173](http://localhost:4173). The search field filters ti
 
 Open [http://localhost:4173/admin](http://localhost:4173/admin) for the local catalog dashboard. You can import CSV/JSON files, export the local catalog, edit records, remove them, or import all uploads returned across the pages of a YouTube channel's official uploads playlist via the YouTube Data API v3. Catalog records support categories (JSON string arrays or comma-separated CSV cells) and HTTPS thumbnail URLs; YouTube imports use official thumbnail metadata when available. Thumbnails and category labels appear in the public catalog, category chips filter results, and the admin movie list shows thumbnails without a source icon. Channel imports require a Google API key with YouTube Data API v3 enabled and key restrictions configured in Google Cloud. The key is entered at import time, sent to Google from the browser, and not saved by the app. YouTube quota, API availability, and channel/video visibility restrictions apply.
 
+## GitHub Pages hosting
+
+The GitHub Actions workflow `.github/workflows/deploy-pages.yml` publishes the static app to GitHub Pages when changes are pushed to `main`. Once enabled and deployed, use `https://krausemapkin-stack.github.io/Motion90s/`; the admin dashboard is at `/Motion90s/admin.html`. The first deployment requires GitHub Pages to be enabled with **Settings → Pages → Build and deployment → GitHub Actions**.
+
+The Pages version is public and the admin dashboard is **not protected by a login**. It is a browser-local demo: edits only affect that browser and do not update a shared catalog for other visitors. Do not enter sensitive data or treat this dashboard as a production admin system.
+
 Run the rights-gating tests with:
 
 ```sh
 npm test
 ```
+
+## Android APK
+
+The GitHub Actions workflow `.github/workflows/build-android-apk.yml` builds a **debug APK** when changes are pushed to `main`, for pull requests targeting `main`, or when manually started from the Actions tab. The build prepares the static web app, wraps it with Capacitor, and uploads `app-debug.apk` as the `motion90s-android-debug-apk` workflow artifact. Download the artifact from the completed workflow run and install the APK on an Android device for testing.
+
+The Android project is generated during CI and is not committed to this web-first repository. The debug APK is for testing; publishing through Google Play requires a release build signed with a protected release key.
 
 ## Rights-gated catalog
 
